@@ -13,7 +13,23 @@ namespace CurrencyLauncher
 		private readonly string location = "launcher.cfg";
 
 		public string SteamLocation = "";
-		public bool DebugMode = false;
+		public string SINCLocation = "";
+		public bool DebugMode = true;
+
+		public static string? GetSteamLocation()
+		{
+			if(Instance == null) { return null; } return Instance.SteamLocation;
+		}
+
+		public static string? GetSINCLocation()
+		{
+			if(Instance == null) { return null; } return Instance.SINCLocation;
+		}
+
+		public static string GetId()
+		{
+			return "362620";
+		}
 
 		internal Settings()
 		{
@@ -29,14 +45,15 @@ namespace CurrencyLauncher
 			}
 			string[] fLines = File.ReadAllLines(location);
 			SteamLocation = fLines[0];
-			DebugMode = bool.Parse(fLines[1]);
+			SINCLocation = fLines[1];
+			
 		}
 
 		public void Save()
 		{
 			File.WriteAllLines(location, new string[]{
 				SteamLocation,
-				DebugMode.ToString()
+				SINCLocation,
 			});
 		}
 	}

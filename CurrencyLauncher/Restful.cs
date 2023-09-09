@@ -42,7 +42,7 @@ namespace CurrencyLauncher
 				}
 				var content = await response.Content.ReadAsStringAsync();
 				JObject? jObject = JsonConvert.DeserializeObject<JObject>(content);
-				if (Settings.Instance is not null && Settings.Instance.DebugMode) { File.WriteAllText("debug.json", content); }
+				
 				bool? success = jObject.GetValue("success").Value<bool>();
 				JToken rates = jObject.GetValue("rates");
 				var dict = rates.ToObject<Dictionary<string, float>>();

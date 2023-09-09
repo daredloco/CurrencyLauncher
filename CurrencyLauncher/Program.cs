@@ -12,10 +12,6 @@ if (args.Length > 0)
 		{
 			settings.DebugMode = true;
 		}
-		else if(arg.StartsWith("-steam=\"") && arg.EndsWith("\""))
-		{
-			settings.SteamLocation = arg.Replace("-steam\"", "").Replace("\"", "");
-		}
 	}
 }
 Console.ForegroundColor = ConsoleColor.Green;
@@ -52,6 +48,17 @@ while(answer == null)
 			{
 				settings.SteamLocation = path;
 				Console.WriteLine("Steam path updated!");
+				Console.WriteLine("Trying to find Software INC path...");
+				var sincPath = Utils.GetSINCPath();
+				if(sincPath == "")
+				{
+					Console.WriteLine("Couldnt find Software INC path... Autostart is deactivated!");
+					Console.WriteLine("Take a look at debug_log.txt to see what went wrong. You can activate it with the -debug parameter");
+				}
+				else
+				{
+					Console.WriteLine("Found Software INC path!");
+				}
 				Console.WriteLine("Press any key to continue...");
 				Console.ReadKey();
 			}
@@ -140,7 +147,7 @@ await Task.Run(() =>
 });
 
 
-Console.WriteLine("Overwriting Currencies.xml...");
+Console.WriteLine("Creating Currencies.xml...");
 File.WriteAllText("Currencies.xml", root.ToString());
 Console.WriteLine("All done! Your exchange rates are up to date =)");
 
@@ -151,8 +158,22 @@ if(settings.SteamLocation is null)
 }
 else
 {
+	if(settings.SINCLocation is null)
+	{
+		Console.WriteLine("Can't autostart Software INC because the location is not set...");
+		Console.ReadKey();
+		return;
+	}
+	Console.WriteLine("Trying to copy Currencies.xml to Software Inc folder...");
+	if (!Utils.CopyCurrencies())
+	{
+		Console.WriteLine("Couldn't copy Currencies.xml to Software Inc folder, you'll need to manually copy it!");
+		Console.ReadKey();
+		return;
+	}
+	Console.WriteLine("Currencies.xml copied!");
 	Console.WriteLine("Trying to launch game with Steam...");
-	Process.Start(settings.SteamLocation, "steam://rungameid/362620");
+	Process.Start(settings.SteamLocation, "steam://rungameid/" + Settings.GetId());
 	Console.WriteLine("Have fun! You can close this window now...");
 	Console.ReadKey();
 }
