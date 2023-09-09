@@ -17,3 +17,5 @@
 8) If you setup autostart, nothing more is to do
 9) If you didn't setup autostart, copy the now created Currencies.xml file inside your SoftwareInc/Mods folder.
 10) You're good to go and use the updated currencies
+
+**Hint: You do only need to set the autostart once, the app will save your settings afterwards!**
