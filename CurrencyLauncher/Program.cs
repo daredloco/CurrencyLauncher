@@ -73,23 +73,23 @@ await Task.Run(() =>
 		switch (pattern)
 		{
 			case 0:
-				currencyRoot.Add(new XElement("Prefix", currSymbol));
+				currencyRoot.Add(new XElement("Prefix", currSymbol != "" ? currSymbol : rate.Key));
 				currencyRoot.Add(new XElement("Postfix", ""));
 				break;
 			case 1:
 				currencyRoot.Add(new XElement("Prefix", ""));
-				currencyRoot.Add(new XElement("Postfix", currSymbol));
+				currencyRoot.Add(new XElement("Postfix", currSymbol != "" ? currSymbol : rate.Key));
 				break;
 			case 2:
-				currencyRoot.Add(new XElement("Prefix", currSymbol + " "));
+				currencyRoot.Add(new XElement("Prefix", currSymbol != "" ? currSymbol + " " : rate.Key));
 				currencyRoot.Add(new XElement("Postfix", ""));
 				break;
 			case 3:
 				currencyRoot.Add(new XElement("Prefix", ""));
-				currencyRoot.Add(new XElement("Postfix", " " + currSymbol));
+				currencyRoot.Add(new XElement("Postfix", currSymbol != "" ? " " + currSymbol : rate.Key));
 				break;
 			default:
-				currencyRoot.Add(new XElement("Prefix", currSymbol == "" ? rate.Key + " " : currSymbol + " "));
+				currencyRoot.Add(new XElement("Prefix", currSymbol != "" ? currSymbol + " " : rate.Key + " "));
 				currencyRoot.Add(new XElement("Postfix", ""));
 				break;
 		}
