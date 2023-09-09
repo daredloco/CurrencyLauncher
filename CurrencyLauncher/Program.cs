@@ -4,6 +4,9 @@ using System.Xml.Linq;
 
 Settings settings = new();
 
+int? answer = null;
+bool autostart = false;
+
 if (args.Length > 0)
 {
 	foreach (var arg in args)
@@ -12,12 +15,23 @@ if (args.Length > 0)
 		{
 			settings.DebugMode = true;
 		}
+		if (arg == "-forex")
+		{
+			//Autostart forex
+			answer = 1;
+			autostart = true;
+		}
+		if (arg == "-crypto")
+		{
+			//Autostart crypto
+			answer = 2;
+			autostart = true;
+		}
 	}
 }
 Console.ForegroundColor = ConsoleColor.Green;
 
-int? answer = null;
-while(answer == null)
+while(answer == null && autostart == false)
 {
 	Console.WriteLine("Currency Updater for Software INC");
 	Console.WriteLine("---------------------------------");
@@ -159,8 +173,11 @@ Console.WriteLine("All done! Your exchange rates are up to date =)");
 
 if(settings.SteamLocation is null)
 {
-	Console.WriteLine("Press any key to launch the game, we're done here!");
-	Console.ReadKey();
+	if (!autostart)
+	{
+		Console.WriteLine("Press any key to close...");
+		Console.ReadKey();
+	}
 }
 else
 {
@@ -180,7 +197,10 @@ else
 	Console.WriteLine("Currencies.xml copied!");
 	Console.WriteLine("Trying to launch game with Steam...");
 	Process.Start(settings.SteamLocation, "steam://rungameid/" + Settings.GetId());
-	Console.WriteLine("Have fun! You can close this window now...");
-	Console.ReadKey();
+	if (!autostart)
+	{
+		Console.WriteLine("Have fun! You can close this window now...");
+		Console.ReadKey();
+	}
 }
 
