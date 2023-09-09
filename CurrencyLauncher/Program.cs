@@ -1,12 +1,20 @@
 ﻿using CurrencyLauncher;
+using System.Diagnostics;
 using System.Xml.Linq;
+
+Settings settings = new();
+
 if (args.Length > 0)
 {
 	foreach (var arg in args)
 	{
-		if(arg == "--debug")
+		if(arg == "-debug")
 		{
-			Utils.DebugMode = true;
+			settings.DebugMode = true;
+		}
+		else if(arg.StartsWith("-steam=\"") && arg.EndsWith("\""))
+		{
+			settings.SteamLocation = arg.Replace("-steam\"", "").Replace("\"", "");
 		}
 	}
 }
@@ -20,17 +28,47 @@ while(answer == null)
 	Console.WriteLine();
 	Console.WriteLine("[1] Update forex currencies");
 	Console.WriteLine("[2] Update crypto currencies");
-	Console.WriteLine("[3] Exit");
-	var key = Console.ReadKey().Key;
+	Console.WriteLine("[3] Set Steam location");
+	Console.WriteLine("[4] Exit");
+	var key = Console.ReadKey(true).Key;
 
 
 	if (key == ConsoleKey.D1)
 	{
 		answer = 1;
-	}else if(key == ConsoleKey.D2)
+	}
+	else if (key == ConsoleKey.D2)
 	{
 		answer = 2;
 	}else if(key == ConsoleKey.D3)
+	{
+		Console.Write("Enter path to Steam: ");
+		var location = Console.ReadLine();
+		if (location == null || location == "") { 
+		} else if (Directory.Exists(location))
+		{
+			string path = Path.Combine(location, "steam.exe");
+			if (File.Exists(path))
+			{
+				settings.SteamLocation = path;
+				Console.WriteLine("Steam path updated!");
+				Console.WriteLine("Press any key to continue...");
+				Console.ReadKey();
+			}
+			else
+			{
+				Console.WriteLine("Couldn't find Steam at '" + path + "'!");
+				Console.WriteLine("Press any key to continue...");
+				Console.ReadKey();
+			}
+		}
+		else
+		{
+			Console.Write("Path isn't a file!");
+			Console.ReadKey();
+		}
+		answer = null;
+	}else if(key == ConsoleKey.D4)
 	{
 		Environment.Exit(0);
 	}
@@ -44,6 +82,8 @@ while(answer == null)
 
 Console.WriteLine("Initializing Restful Handler...");
 new Restful();
+Console.WriteLine("Update settings...");
+settings.Save();
 
 Console.WriteLine("Fetching current exchange rates...");
 var rates = await Restful.Instance.GetRates(answer == 2);
@@ -102,8 +142,18 @@ await Task.Run(() =>
 
 Console.WriteLine("Overwriting Currencies.xml...");
 File.WriteAllText("Currencies.xml", root.ToString());
-
 Console.WriteLine("All done! Your exchange rates are up to date =)");
-Console.WriteLine("Press any key to close this window, we're done here!");
-Console.ReadKey();
+
+if(settings.SteamLocation is null)
+{
+	Console.WriteLine("Press any key to launch the game, we're done here!");
+	Console.ReadKey();
+}
+else
+{
+	Console.WriteLine("Trying to launch game with Steam...");
+	Process.Start(settings.SteamLocation, "steam://rungameid/362620");
+	Console.WriteLine("Have fun! You can close this window now...");
+	Console.ReadKey();
+}
 

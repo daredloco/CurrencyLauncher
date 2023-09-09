@@ -9,8 +9,6 @@ namespace CurrencyLauncher
 {
 	internal class Utils
 	{
-		internal static bool DebugMode = false;
-
 		public static bool TryGetCurrencySymbol(string ISOCurrencySymbol, out string symbol, out int pattern)
 		{
 			int p = -1;
