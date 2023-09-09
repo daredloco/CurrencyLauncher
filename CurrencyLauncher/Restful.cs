@@ -22,9 +22,14 @@ namespace CurrencyLauncher
 			client.DefaultRequestHeaders.Add("Accept", "application/json");
 		}
 
-		public async Task<Dictionary<string, float>> GetRates()
+		public async Task<Dictionary<string, float>> GetRates(bool crypto = false)
 		{
 			string ApiRoot = "https://api.exchangerate.host/latest?base=USD";
+
+			if (crypto)
+			{
+				ApiRoot += "&source=crypto";
+			}
 			try
 			{
 				Uri url = new(ApiRoot);
@@ -37,6 +42,7 @@ namespace CurrencyLauncher
 				}
 				var content = await response.Content.ReadAsStringAsync();
 				JObject? jObject = JsonConvert.DeserializeObject<JObject>(content);
+				if (Utils.DebugMode) { File.WriteAllText("debug.json", content); }
 				bool? success = jObject.GetValue("success").Value<bool>();
 				JToken rates = jObject.GetValue("rates");
 				var dict = rates.ToObject<Dictionary<string, float>>();

@@ -1,20 +1,57 @@
 ﻿using CurrencyLauncher;
 using System.Xml.Linq;
+if (args.Length > 0)
+{
+	foreach (var arg in args)
+	{
+		if(arg == "--debug")
+		{
+			Utils.DebugMode = true;
+		}
+	}
+}
+Console.ForegroundColor = ConsoleColor.Green;
+
+int? answer = null;
+while(answer == null)
+{
+	Console.WriteLine("Currency Updater for Software INC");
+	Console.WriteLine("---------------------------------");
+	Console.WriteLine();
+	Console.WriteLine("[1] Update forex currencies");
+	Console.WriteLine("[2] Update crypto currencies");
+	Console.WriteLine("[3] Exit");
+	var key = Console.ReadKey().Key;
+
+
+	if (key == ConsoleKey.D1)
+	{
+		answer = 1;
+	}else if(key == ConsoleKey.D2)
+	{
+		answer = 2;
+	}else if(key == ConsoleKey.D3)
+	{
+		Environment.Exit(0);
+	}
+	else
+	{
+		answer = null;
+	}
+	Console.Clear();
+}
+
 
 Console.WriteLine("Initializing Restful Handler...");
 new Restful();
 
 Console.WriteLine("Fetching current exchange rates...");
-var rates = await Restful.Instance.GetRates();
+var rates = await Restful.Instance.GetRates(answer == 2);
 
 Console.WriteLine($"Writing {rates.Count()} exchange rates into database...");
 
 XElement root = new XElement("Currencies");
 
-//XElement root = new XElement("Currencies",
-//	from keyValue in rates
-//	select new XElement(keyValue.Key, keyValue.Value)
-//);
 await Task.Run(() =>
 {
 	int progress = 0;
@@ -52,7 +89,7 @@ await Task.Run(() =>
 				currencyRoot.Add(new XElement("Postfix", " " + currSymbol));
 				break;
 			default:
-				currencyRoot.Add(new XElement("Prefix", currSymbol));
+				currencyRoot.Add(new XElement("Prefix", currSymbol == "" ? rate.Key + " " : currSymbol + " "));
 				currencyRoot.Add(new XElement("Postfix", ""));
 				break;
 		}
