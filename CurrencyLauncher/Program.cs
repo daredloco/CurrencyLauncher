@@ -99,6 +99,12 @@ Console.WriteLine($"Writing {rates.Count()} exchange rates into database...");
 
 XElement root = new XElement("Currencies");
 
+XElement kennethRoot = new XElement("Currency");
+kennethRoot.Add(new XElement("Name", "KENNETH"));
+kennethRoot.Add(new XElement("Prefix", ""));
+kennethRoot.Add(new XElement("Postfix", " KENNETH"));
+kennethRoot.Add(new XElement("Rate", "0.01"));
+root.Add(kennethRoot);
 await Task.Run(() =>
 {
 	int progress = 0;
