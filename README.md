@@ -19,3 +19,6 @@
 10) You're good to go and use the updated currencies
 
 **Hint: You do only need to set the autostart once, the app will save your settings afterwards!**
+
+## Bonus
+If you want to do everything automatically follow all the steps in **Usage** until point 6. After that create a shortcut with the parameter "-forex" for forex currencies or "-crypto" for crypto currencies.
